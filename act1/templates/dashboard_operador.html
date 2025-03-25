@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Operador - Gestión de Maquinaria</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+
+    <!-- Fuentes Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+
+    <!-- CSS Personalizado -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: #1a2b49;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #fff;
+            transition: color 0.3s ease;
+        }
+
+        .navbar-brand:hover {
+            color: #00d4ff;
+        }
+
+        .navbar-nav .nav-link {
+            color: #fff;
+            font-weight: 400;
+            margin-left: 1.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #00d4ff;
+        }
+
+        /* Contenedor principal */
+        .container {
+            flex: 1;
+            padding-top: 120px;
+            padding-bottom: 40px;
+            max-width: 1000px;
+        }
+
+        .content-container {
+            background-color: #fff;
+            border-radius: 15px;
+            padding: 2.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            transition: transform 0.3s ease;
+        }
+
+        .content-container:hover {
+            transform: translateY(-5px);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1a2b49;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1a2b49;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            color: #555;
+            font-size: 1rem;
+        }
+
+        /* Select personalizado */
+        .custom-select-container {
+            position: relative;
+            width: 250px;
+            margin: 20px auto;
+        }
+
+        .custom-select {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+            background-color: #ffffff;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23333' width='18px' height='18px'%3E%3Cpath d='M7 10l5 5 5-5H7z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            appearance: none;
+        }
+
+        .custom-select:hover, .custom-select:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        /* Lista */
+        .list-group-item {
+            border: none;
+            padding: 10px 0;
+            color: #555;
+            font-size: 1rem;
+        }
+
+        /* Mensajes */
+        .messages {
+            margin-bottom: 1.5rem;
+        }
+
+        .alert {
+            border-radius: 8px;
+            font-weight: 400;
+            padding: 1rem;
+            margin-bottom: 10px;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #1a2b49;
+            color: #fff;
+            text-align: center;
+            padding: 1rem 0;
+            width: 100%;
+            margin-top: auto;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding-top: 100px;
+                max-width: 90%;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .custom-select-container {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar fijo -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'dashboard_operador' %}">Gestión de Maquinaria</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <span class="nav-link">Bienvenido, {{ user.username }}</span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">Cerrar Sesión</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <div class="container">
+        <!-- Mostrar mensajes -->
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Select personalizado con redirección -->
+        <div class="custom-select-container">
+            <select class="custom-select" onchange="location = this.value;">
+                <option value="" disabled selected>Selecciona una opción</option>
+                <option value="{% url 'dashboard_operador' %}">Mi Dashboard</option>
+                <option value="{% url 'agregar_operacion' %}">Agregar Operación</option>
+                <option value="{% url 'lista_operaciones' %}">Ver Operaciones</option>
+                <option value="{% url 'listar_maquinas_disponibles' %}">Máquinas Disponibles</option>
+                <option value="{% url 'estadisticas_maquinas_estado' %}">Estadísticas por Estado</option>
+                <option value="{% url 'tiempo_promedio_operacion' %}">Tiempo Promedio Operaciones</option>
+                <option value="{% url 'maquinas_por_kilometraje' %}">Máquinas por Kilometraje</option>
+            </select>
+        </div>
+
+        <!-- Sección de bienvenida -->
+        <div class="content-container text-center">
+            <h1>Bienvenido, {{ trabajador.nombre }} {{ trabajador.apellido }}</h1>
+            <p>Aquí puedes gestionar operaciones y ver estadísticas de máquinas.</p>
+        </div>
+
+        <!-- Sección de tiempo promedio de operaciones -->
+        <div class="content-container">
+            <h2>Tiempo Promedio de Operaciones</h2>
+            {% if tiempo_promedio %}
+                <ul class="list-group">
+                    {% for item in tiempo_promedio %}
+                        <li class="list-group-item">
+                            {{ item.tipo_operacion }} - Promedio: {{ item.tiempo_promedio|floatformat:2 }} horas
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No hay datos de operaciones disponibles.</p>
+            {% endif %}
+        </div>
+
+        <!-- Sección de máquinas por kilometraje -->
+        <div class="content-container">
+            <h2>Máquinas por Kilometraje</h2>
+            {% if maquinas_por_km %}
+                <ul class="list-group">
+                    {% for maquina in maquinas_por_km %}
+                        <li class="list-group-item">
+                            {{ maquina.marca }} - {{ maquina.modelo }}: {{ maquina.kilometraje }} km
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No hay máquinas registradas.</p>
+            {% endif %}
+        </div>
+
+        <!-- Sección de estadísticas por estado -->
+        <div class="content-container">
+            <h2>Estadísticas por Estado de Máquinas</h2>
+            {% if estadisticas_estado %}
+                <ul class="list-group">
+                    {% for estado in estadisticas_estado %}
+                        <li class="list-group-item">
+                            {{ estado.estado_maquina }}: {{ estado.cantidad }} máquinas
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No hay estadísticas disponibles.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2025 Gestión de Maquinaria. Todos los derechos reservados.</p>
+    </footer>
+
+    <!-- Bootstrap JS y Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js" integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS" crossorigin="anonymous"></script>
+</body>
+</html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Operaciones - Gestión de Maquinaria</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+
+    <!-- Fuentes Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+
+    <!-- CSS Personalizado -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: #1a2b49;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #fff;
+            transition: color 0.3s ease;
+        }
+
+        .navbar-brand:hover {
+            color: #00d4ff;
+        }
+
+        .navbar-nav .nav-link {
+            color: #fff;
+            font-weight: 400;
+            margin-left: 1.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #00d4ff;
+        }
+
+        /* Contenedor principal */
+        .container {
+            flex: 1;
+            padding-top: 120px;
+            padding-bottom: 40px;
+            max-width: 1000px; /* Aumentado para la tabla */
+        }
+
+        .content-container {
+            background-color: #fff;
+            border-radius: 15px;
+            padding: 2.5rem;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            transition: transform 0.3s ease;
+        }
+
+        .content-container:hover {
+            transform: translateY(-5px);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1a2b49;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        /* Tabla */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 1rem;
+            color: #555;
+        }
+
+        th {
+            background-color: #1a2b49;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        tr:hover {
+            background-color: #f1f3f5;
+        }
+
+        /* Enlaces de acción */
+        a {
+            color: #007bff;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .btn-primary {
+            display: inline-block;
+            width: auto;
+            padding: 12px 20px;
+            font-size: 1rem;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            color: #fff;
+        }
+
+        /* Mensajes */
+        .messages {
+            margin-bottom: 1.5rem;
+        }
+
+        .alert {
+            border-radius: 8px;
+            font-weight: 400;
+            padding: 1rem;
+        }
+
+        /* Paginación */
+        .pagination {
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .page-link {
+            color: #1a2b49;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .page-item.active .page-link {
+            background-color: #1a2b49;
+            border-color: #1a2b49;
+            color: #fff;
+        }
+
+        .page-link:hover {
+            background-color: #00d4ff;
+            color: #fff;
+            border-color: #00d4ff;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #1a2b49;
+            color: #fff;
+            text-align: center;
+            padding: 1rem 0;
+            width: 100%;
+            margin-top: auto;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding-top: 100px;
+                max-width: 90%;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            table, th, td {
+                font-size: 0.9rem;
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar fijo -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'dashboard_trabajador' %}">Gestión de Maquinaria</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <span class="nav-link">Bienvenido, {{ user.username }}</span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">Cerrar Sesión</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <div class="container">
+        <div class="content-container">
+            <h1>Lista de Operaciones</h1>
+
+            <!-- Mostrar mensajes -->
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% endif %}" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Tabla de operaciones -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha Entrada</th>
+                        <th>Fecha Salida</th>
+                        <th>Tiempo (horas)</th>
+                        <th>Área</th>
+                        <th>Tipo Operación</th>
+                        <th>Máquina</th>
+                        <th>Trabajador</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for operacion in page_obj %}
+                        <tr>
+                            <td>{{ operacion.id }}</td>
+                            <td>{{ operacion.fecha_entrada|date:"d/m/Y H:i" }}</td>
+                            <td>{{ operacion.fecha_salida|date:"d/m/Y H:i" }}</td>
+                            <td>{{ operacion.tiempo_operacion|floatformat:2 }}</td>
+                            <td>{{ operacion.area }}</td>
+                            <td>{{ operacion.tipo_operacion }}</td>
+                            <td>{{ operacion.maquina.marca }} {{ operacion.maquina.modelo }}</td>
+                            <td>{{ operacion.trabajador.nombre }} {{ operacion.trabajador.apellido }}</td>
+                            <td>
+                                <a href="{% url 'editar_operacion' operacion.pk %}">Editar</a>
+                                <a href="{% url 'eliminar_operacion' operacion.pk %}">Eliminar</a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="9">No hay operaciones registradas.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Paginación -->
+            {% if page_obj.has_other_pages %}
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                                    <span aria-hidden="true">«</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">«</span>
+                            </li>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                                    <span aria-hidden="true">»</span>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">»</span>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+
+            <!-- Enlace para agregar nueva operación -->
+            <a href="{% url 'agregar_operacion' %}" class="btn btn-primary">Agregar nueva operación</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2025 Gestión de Maquinaria. Todos los derechos reservados.</p>
+    </footer>
+
+    <!-- Bootstrap JS y Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js" integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS" crossorigin="anonymous"></script>
+</body>
+</html>
