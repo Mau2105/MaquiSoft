@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Trabajador - Gestión de Maquinaria</title>
+    <title>Agregar Trabajador - Gestión de Maquinaria</title>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
@@ -59,7 +59,8 @@
             flex: 1;
             padding-top: 120px;
             padding-bottom: 40px;
-            max-width: 1000px;
+            max-width: 600px;
+            margin: 0 auto;
         }
 
         .content-container {
@@ -67,7 +68,6 @@
             border-radius: 15px;
             padding: 2.5rem;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
             transition: transform 0.3s ease;
         }
 
@@ -83,35 +83,28 @@
             text-align: center;
         }
 
-        h2 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: #1a2b49;
-            margin-bottom: 1rem;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #dee2e6;
-            font-size: 1rem;
+        .form-label {
+            font-weight: 400;
             color: #555;
         }
 
-        th {
+        .btn-primary {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
             background-color: #1a2b49;
-            color: #fff;
-            font-weight: 700;
+            border: none;
         }
 
-        tr:hover {
-            background-color: #f1f3f5;
+        .btn-primary:hover {
+            background-color: #00d4ff;
+        }
+
+        .btn-secondary {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+            margin-top: 10px;
         }
 
         .messages {
@@ -125,7 +118,30 @@
             margin-bottom: 10px;
         }
 
-        .badge {
+        /* Estilo para campos renderizados con as_p */
+        p {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            font-weight: 400;
+            color: #555;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-family: 'Roboto', sans-serif;
+            box-sizing: border-box;
+        }
+
+        .errorlist {
+            color: #dc3545;
+            list-style: none;
+            padding: 0;
+            margin: 0 0 10px 0;
             font-size: 0.9rem;
         }
 
@@ -147,15 +163,6 @@
             h1 {
                 font-size: 2rem;
             }
-
-            h2 {
-                font-size: 1.5rem;
-            }
-
-            table, th, td {
-                font-size: 0.9rem;
-                padding: 8px;
-            }
         }
     </style>
 </head>
@@ -163,7 +170,7 @@
     <!-- Navbar fijo -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'dashboard_trabajador' %}">Gestión de Maquinaria</a>
+            <a class="navbar-brand" href="{% url 'dashboard_admin' %}">Gestión de Maquinaria</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -182,97 +189,37 @@
 
     <!-- Contenido principal -->
     <div class="container">
-        <!-- Mostrar mensajes -->
-        {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                    <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% endif %}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-
-        <!-- Sección de bienvenida -->
-        <div class="content-container text-center">
-            <h1>Bienvenido, {{ trabajador.nombre }} {{ trabajador.apellido }}</h1>
-            <p>Aquí puedes ver las máquinas disponibles y tus operaciones.</p>
-        </div>
-
-        <!-- Máquinas disponibles -->
         <div class="content-container">
-            <h2>Máquinas Disponibles</h2>
-            {% if maquinas_disponibles %}
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Marca</th>
-                            <th>Modelo</th>
-                            <th>Tipo</th>
-                            <th>Estado</th>
-                            <th>Tipo Combustible</th>
-                            <th>Serial</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for maquina in maquinas_disponibles %}
-                            <tr>
-                                <td>{{ maquina.marca }}</td>
-                                <td>{{ maquina.modelo }}</td>
-                                <td>{{ maquina.tipo }}</td>
-                                <td>{{ maquina.estado_maquina }}</td>
-                                <td>{{ maquina.tipo_combustible }}</td>
-                                <td>{{ maquina.serial }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <p>No hay máquinas disponibles en este momento.</p>
-            {% endif %}
-        </div>
+            <h1>Agregar Nuevo Trabajador</h1>
 
-        <!-- Operaciones del trabajador -->
-        <div class="content-container">
-            <h2>Tus Operaciones</h2>
-            {% if operaciones %}
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Tipo de Operación</th>
-                            <th>Máquina</th>
-                            <th>Fecha Entrada</th>
-                            <th>Fecha Salida</th>
-                            <th>Tiempo (horas)</th>
-                            <th>Área</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for operacion in operaciones %}
-                            <tr>
-                                <td>{{ operacion.tipo_operacion }}</td>
-                                <td>{{ operacion.maquina.marca }} {{ operacion.maquina.modelo }}</td>
-                                <td>{{ operacion.fecha_entrada }}</td>
-                                <td>{{ operacion.fecha_salida }}</td>
-                                <td>{{ operacion.tiempo_operacion|default:"N/A" }}</td>
-                                <td>{{ operacion.area }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <p>No tienes operaciones registradas.</p>
+            <!-- Mostrar mensajes -->
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-danger{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
             {% endif %}
+
+            <!-- Formulario -->
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <a href="{% url 'dashboard_admin' %}" class="btn btn-secondary">Volver al Dashboard</a>
+            </form>
         </div>
     </div>
 
     <!-- Footer -->
     <footer>
-        <p>© 2025 Gestión de Maquinaria. Todos los derechos reservados.</p>
+        <p>© 2025 Gestión de Maquinaria. Todos los derechos reservados. MauroSuarez</p>
     </footer>
 
     <!-- Bootstrap JS y Popper.js -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js" integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS" crossorigin="anonymous"></script
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js" integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS" crossorigin="anonymous"></script>
 </body>
 </html>

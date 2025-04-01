@@ -23,7 +23,6 @@
             flex-direction: column;
         }
 
-        /* Navbar */
         .navbar {
             background-color: #1a2b49;
             padding: 1rem 2rem;
@@ -56,12 +55,18 @@
             color: #00d4ff;
         }
 
-        /* Contenedor principal */
+        .clock {
+            color: #fff;
+            font-weight: 400;
+            font-size: 1rem;
+            margin-left: 1.5rem;
+        }
+
         .container {
             flex: 1;
             padding-top: 120px;
             padding-bottom: 40px;
-            max-width: 1200px; /* Aumentado para más espacio */
+            max-width: 1200px;
         }
 
         .content-container {
@@ -104,7 +109,6 @@
             font-size: 1rem;
         }
 
-        /* Select personalizado */
         .custom-select-container {
             position: relative;
             width: 250px;
@@ -129,7 +133,6 @@
             box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
         }
 
-        /* Lista y tabla */
         .list-group-item {
             border: none;
             padding: 10px 0;
@@ -158,13 +161,11 @@
             background-color: #f1f3f5;
         }
 
-        /* Botones */
         .btn-sm {
             padding: 5px 10px;
             font-size: 0.875rem;
         }
 
-        /* Mensajes */
         .messages {
             margin-bottom: 1.5rem;
         }
@@ -176,7 +177,6 @@
             margin-bottom: 10px;
         }
 
-        /* Footer */
         footer {
             background-color: #1a2b49;
             color: #fff;
@@ -186,7 +186,6 @@
             margin-top: auto;
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
             .container {
                 padding-top: 100px;
@@ -218,11 +217,15 @@
                 font-size: 0.9rem;
                 padding: 8px;
             }
+
+            .clock {
+                margin-left: 0;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Navbar fijo -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container-fluid">
             <a class="navbar-brand" href="{% url 'dashboard_admin' %}">Gestión de Maquinaria</a>
@@ -235,6 +238,9 @@
                         <span class="nav-link">Bienvenido, {{ user.username }}</span>
                     </li>
                     <li class="nav-item">
+                        <span id="clock" class="clock"></span>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{% url 'logout' %}">Cerrar Sesión</a>
                     </li>
                 </ul>
@@ -242,9 +248,7 @@
         </div>
     </nav>
 
-    <!-- Contenido principal -->
     <div class="container">
-        <!-- Mostrar mensajes -->
         {% if messages %}
             <div class="messages">
                 {% for message in messages %}
@@ -255,7 +259,6 @@
             </div>
         {% endif %}
 
-        <!-- Select personalizado con todas las opciones -->
         <div class="custom-select-container">
             <select class="custom-select" onchange="location = this.value;">
                 <option value="" disabled selected>Selecciona una opción</option>
@@ -276,13 +279,11 @@
             </select>
         </div>
 
-        <!-- Sección de bienvenida -->
         <div class="content-container text-center">
             <h1>Bienvenido, {{ trabajador.nombre }} {{ trabajador.apellido }}</h1>
             <p>Administra máquinas, complementos, operaciones y trabajadores desde aquí.</p>
         </div>
 
-        <!-- Resumen de módulos -->
         <div class="row">
             <div class="col-md-3">
                 <div class="content-container">
@@ -299,7 +300,7 @@
             <div class="col-md-3">
                 <div class="content-container">
                     <h3>Operaciones</h3>
-                    <p>{{ operaciones.count }} realizadas</p>
+                    <p>{{ operaciones_con_tiempo|length }} realizadas</p>
                 </div>
             </div>
             <div class="col-md-3">
@@ -310,33 +311,31 @@
             </div>
         </div>
 
-        <!-- Sección de máquinas -->
-<div class="content-container">
-    <h2>Máquinas</h2>
-    {% if maquinas %}
-        <ul class="list-group">
-            {% for maquina in maquinas %}
-                <li class="list-group-item">
-                    <span>{{ maquina.marca }} {{ maquina.modelo }} - {{ maquina.serial }}
-                        {% if maquina.disponibilidad == 'SÍ' %}
-                            <span class="badge bg-success">Disponible</span>
-                        {% else %}
-                            <span class="badge bg-danger">No Disponible</span>
-                        {% endif %}
-                    </span>
-                    <span>
-                        <a href="{% url 'editar_maquina' maquina.pk %}" class="btn btn-sm btn-primary ms-2">Editar</a>
-                        <a href="{% url 'eliminar_maquina' maquina.pk %}" class="btn btn-sm btn-danger ms-2">Eliminar</a>
-                    </span>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No hay máquinas registradas.</p>
-    {% endif %}
-</div>
+        <div class="content-container">
+            <h2>Máquinas</h2>
+            {% if maquinas %}
+                <ul class="list-group">
+                    {% for maquina in maquinas %}
+                        <li class="list-group-item">
+                            <span>{{ maquina.marca }} {{ maquina.modelo }} - {{ maquina.serial }}
+                                {% if maquina.disponibilidad == 'SÍ' %}
+                                    <span class="badge bg-success">Disponible</span>
+                                {% else %}
+                                    <span class="badge bg-danger">No Disponible</span>
+                                {% endif %}
+                            </span>
+                            <span>
+                                <a href="{% url 'editar_maquina' maquina.pk %}" class="btn btn-sm btn-primary ms-2">Editar</a>
+                                <a href="{% url 'eliminar_maquina' maquina.pk %}" class="btn btn-sm btn-danger ms-2">Eliminar</a>
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No hay máquinas registradas.</p>
+            {% endif %}
+        </div>
 
-        <!-- Sección de complementos -->
         <div class="content-container">
             <h2>Complementos</h2>
             {% if complementos %}
@@ -356,19 +355,19 @@
             {% endif %}
         </div>
 
-        <!-- Sección de operaciones -->
         <div class="content-container">
             <h2>Operaciones</h2>
-            {% if operaciones %}
+            {% if operaciones_con_tiempo %}
                 <ul class="list-group">
-                    {% for operacion in operaciones %}
+                    {% for item in operaciones_con_tiempo %}
                         <li class="list-group-item">
-                            <span>{{ operacion.tipo_operacion }} - {{ operacion.fecha_entrada }} 
-                                (Máquina: {{ operacion.maquina.marca }} - Trabajador: {{ operacion.trabajador.nombre }} {{ operacion.trabajador.apellido }})
+                            <span>{{ item.operacion.tipo_operacion }} - {{ item.operacion.fecha_entrada }} 
+                                (Máquina: {{ item.operacion.maquina.marca }} - Trabajador: {{ item.operacion.trabajador.nombre }} {{ item.operacion.trabajador.apellido }}) 
+                                - Tiempo: {{ item.tiempo_formateado }}
                             </span>
                             <span>
-                                <a href="{% url 'editar_operacion' operacion.pk %}" class="btn btn-sm btn-primary ms-2">Editar</a>
-                                <a href="{% url 'eliminar_operacion' operacion.pk %}" class="btn btn-sm btn-danger ms-2">Eliminar</a>
+                                <a href="{% url 'editar_operacion' item.operacion.pk %}" class="btn btn-sm btn-primary ms-2">Editar</a>
+                                <a href="{% url 'eliminar_operacion' item.operacion.pk %}" class="btn btn-sm btn-danger ms-2">Eliminar</a>
                             </span>
                         </li>
                     {% endfor %}
@@ -378,7 +377,6 @@
             {% endif %}
         </div>
 
-        <!-- Sección de trabajadores con asignación de PIN -->
         <div class="content-container">
             <h2>Trabajadores</h2>
             <p>Asignaciones de PIN</p>
@@ -417,15 +415,28 @@
         </div>
     </div>
 
-    <!-- Footer -->
     <footer>
-        <p>© 2025 Gestión de Maquinaria. Todos los derechos reservados.</p>
+        <p>© 2025 Gestión de Maquinaria. Todos los derechos reservados. MauroSuarez</p>
     </footer>
 
-    <!-- Bootstrap JS y Popper.js -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js" integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS" crossorigin="anonymous"></script>
     <script>
+        function updateClock() {
+            const now = new Date();
+            const options = { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit', 
+                hour12: false,
+                timeZone: 'America/Bogota'
+            };
+            const timeString = now.toLocaleTimeString('es-CO', options);
+            document.getElementById('clock').textContent = timeString;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
         document.querySelectorAll('.pin-submit').forEach(button => {
             button.addEventListener('click', function(e) {
                 e.preventDefault();

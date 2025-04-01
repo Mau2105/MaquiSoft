@@ -226,7 +226,7 @@
 
     <!-- Footer -->
     <footer>
-        <p>© 2025 Gestión de Maquinaria. Todos los derechos reservados.</p>
+        <p>© 2025 Gestión de Maquinaria. Todos los derechos reservados. MauroSuarez</p>
     </footer>
 
     <!-- Bootstrap JS y Popper.js -->
@@ -239,20 +239,22 @@
             const fechaEntradaInput = document.querySelector('input[name="fecha_entrada"]');
             const fechaSalidaInput = document.querySelector('input[name="fecha_salida"]');
             const tiempoOperacionInput = document.querySelector('input[name="tiempo_operacion"]');
-
+    
             function calcularTiempoOperacion() {
                 const entrada = new Date(fechaEntradaInput.value);
                 const salida = new Date(fechaSalidaInput.value);
-
+    
                 if (entrada && salida && salida > entrada) {
                     const diferenciaMs = salida - entrada; // Diferencia en milisegundos
-                    const diferenciaHoras = diferenciaMs / (1000 * 60 * 60); // Convertir a horas
-                    tiempoOperacionInput.value = diferenciaHoras.toFixed(2); // Mostrar con 2 decimales
+                    const totalMinutos = Math.floor(diferenciaMs / (1000 * 60)); // Convertir a minutos totales
+                    const horas = Math.floor(totalMinutos / 60); // Horas completas
+                    const minutos = totalMinutos % 60; // Minutos restantes
+                    tiempoOperacionInput.value = `${horas}h ${minutos}m`; // Formato: "Xh Ym"
                 } else {
                     tiempoOperacionInput.value = ''; // Limpiar si las fechas no son válidas
                 }
             }
-
+    
             // Escuchar cambios en los campos de fecha
             fechaEntradaInput.addEventListener('change', calcularTiempoOperacion);
             fechaSalidaInput.addEventListener('change', calcularTiempoOperacion);

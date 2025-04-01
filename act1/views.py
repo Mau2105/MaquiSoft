@@ -49,7 +49,7 @@ def login_view(request):
     return render(request, 'login.html')
 
 def logout_view(request):
-    """Cierra la sesión del usuario y redirige al login."""
+    """Cierra lasessions del usuario y redirige al login."""
     logout(request)
     messages.success(request, '¡Has cerrado sesión correctamente!')
     return redirect('index')
@@ -150,10 +150,24 @@ def dashboard_admin(request):
     operaciones = Operacion.objects.select_related('maquina', 'trabajador').all()
     trabajadores = Trabajador.objects.select_related('rol').all()
 
+    # Lista para almacenar operaciones con tiempo formateado
+    operaciones_con_tiempo = []
+    for operacion in operaciones:
+        if operacion.tiempo_operacion:
+            horas = int(operacion.tiempo_operacion)  # Parte entera (horas)
+            minutos = int((operacion.tiempo_operacion - horas) * 60)  # Parte decimal convertida a minutos
+            tiempo_formateado = f"{horas}h {minutos}m"
+        else:
+            tiempo_formateado = "No calculado"
+        operaciones_con_tiempo.append({
+            'operacion': operacion,
+            'tiempo_formateado': tiempo_formateado
+        })
+
     context = {
         'maquinas': maquinas,
         'complementos': complementos,
-        'operaciones': operaciones,
+        'operaciones_con_tiempo': operaciones_con_tiempo,  # Nueva clave con tiempo formateado
         'trabajadores': trabajadores,
         'trabajador': trabajador
     }
@@ -275,6 +289,7 @@ def lista_operaciones(request):
 
 @login_required
 def agregar_operacion(request):
+    """Agrega una nueva operación al sistema."""
     if request.method == 'POST':
         form = OperacionForm(request.POST)
         if form.is_valid():
@@ -283,11 +298,13 @@ def agregar_operacion(request):
             fecha_salida = form.cleaned_data['fecha_salida']
             if fecha_entrada and fecha_salida and fecha_salida > fecha_entrada:
                 diferencia = fecha_salida - fecha_entrada
-                operacion.tiempo_operacion = diferencia.total_seconds() / 3600
+                operacion.tiempo_operacion = diferencia.total_seconds() / 3600  # Guardar en horas decimales
             else:
                 operacion.tiempo_operacion = None
             operacion.save()
+            messages.success(request, 'Operación agregada correctamente.')
             return redirect('lista_operaciones')
+        messages.error(request, 'Por favor corrige los errores en el formulario.')
     else:
         form = OperacionForm()
     return render(request, 'agregar_operacion.html', {'form': form})
@@ -300,7 +317,15 @@ def editar_operacion(request, pk):
     if request.method == 'POST':
         form = OperacionForm(request.POST, instance=operacion)
         if form.is_valid():
-            form.save()
+            operacion = form.save(commit=False)
+            fecha_entrada = form.cleaned_data['fecha_entrada']
+            fecha_salida = form.cleaned_data['fecha_salida']
+            if fecha_entrada and fecha_salida and fecha_salida > fecha_entrada:
+                diferencia = fecha_salida - fecha_entrada
+                operacion.tiempo_operacion = diferencia.total_seconds() / 3600  # Guardar en horas decimales
+            else:
+                operacion.tiempo_operacion = None
+            operacion.save()
             messages.success(request, 'Operación actualizada correctamente.')
             return redirect('lista_operaciones')
         messages.error(request, 'Por favor corrige los errores en el formulario.')
@@ -333,14 +358,29 @@ def lista_trabajadores(request):
 @login_required
 @admin_required
 def agregar_trabajador(request):
+    """Agrega un nuevo trabajador al sistema con rol asignado."""
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save()  # Guarda el usuario
+            rol_trabajador, _ = Rol.objects.get_or_create(
+                nombre=ROLES['TRABAJADOR'],
+                defaults={'descripcion': 'Rol básico para trabajadores'}
+            )
+            Trabajador.objects.create(
+                usuario=user,
+                nombre=form.cleaned_data['nombre'],
+                apellido=form.cleaned_data['apellido'],
+                cedula=form.cleaned_data['cedula'],
+                telefono=form.cleaned_data['telefono'],
+                rol=rol_trabajador
+            )
             messages.success(request, 'Trabajador agregado correctamente.')
-            return redirect('lista_trabajadores')
+            return redirect('dashboard_admin')  # Redirige al dashboard en lugar de lista_trabajadores
         else:
             messages.error(request, 'Por favor corrige los errores en el formulario.')
+            # Imprimir errores para depuración
+            print(form.errors)
     else:
         form = CustomUserCreationForm()
     return render(request, 'agregar_trabajador.html', {'form': form})
@@ -383,7 +423,7 @@ def eliminar_trabajador(request, pk):
 @login_required
 def listar_maquinas_disponibles(request):
     """Lista máquinas disponibles con paginación."""
-    maquinas = Maquina.objects.filter(disponibilidad='SI')
+    maquinas = Maquina.objects.filter(disponibilidad='SÍ')
     paginator = Paginator(maquinas, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
